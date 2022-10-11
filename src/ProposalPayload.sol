@@ -7,6 +7,7 @@ import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
  * @title Aave FEI Reserve Factor Update
  * @author Llama
  * @notice This payload sets the reserve factor to 99% for FEI in Aave v2 pool on mainnet
+ * Reference: https://wheat-guardian-dfc.notion.site/Problem-with-FEI-Reserve-Factor-100b6413e359494a9ecb59a528035ff2
  * Governance Forum Post:
  * Snapshot:
  */
