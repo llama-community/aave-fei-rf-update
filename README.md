@@ -1,35 +1,18 @@
-# AAVE Governance Forge Template
+# Aave FEI Reserve Factor Update
 
-A template for creating AAVE governance Proposal payload contracts.
+Payload and tests to set the reserve factor to 99% for FEI in Aave v2 pool on Mainnet.
 
 ## Installation
 
 It requires [Foundry](https://github.com/gakonst/foundry) installed to run. You can find instructions here [Foundry installation](https://github.com/gakonst/foundry#installation).
 
-### GitHub template
-
-It's easiest to start a new project by clicking the ["Use this template"](https://github.com/llama-community/aave-governance-forge-template).
-
-Then clone the templated repository locally and `cd` into it and run the following commands:
+To install, run the following commands:
 
 ```sh
+$ git clone https://github.com/llama-community/aave-fei-rf-update.git
+$ cd aave-fei-rf-update/
 $ npm install
 $ forge install
-$ forge update
-$ git submodule update --init --recursive
-```
-
-### Manual installation
-
-If you want to create your project manually, run the following commands:
-
-```sh
-$ forge init --template https://github.com/llama-community/aave-governance-forge-template <my-repo>
-$ cd <my-repo>
-$ npm install
-$ forge install
-$ forge update
-$ git submodule update --init --recursive
 ```
 
 ## Setup
