@@ -9,6 +9,7 @@ import {GovHelpers} from "@aave-helpers/GovHelpers.sol";
 import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
 import {ProposalPayload} from "../ProposalPayload.sol";
 import {DeployMainnetProposal} from "../../script/DeployMainnetProposal.s.sol";
+import {AaveV2Helpers, ReserveConfig} from "./utils/AaveV2Helpers.sol";
 
 contract ProposalPayloadE2ETest is Test {
     address public constant AAVE_WHALE = 0x25F2226B597E8F9514B3F68F00f494cF4f286491;
@@ -16,9 +17,9 @@ contract ProposalPayloadE2ETest is Test {
     uint256 public proposalId;
 
     string public constant MARKET_NAME = "AaveV2Ethereum";
+    address public constant FEI = 0x956F47F50A910163D8BF957Cf5846D573E7f87CA;
 
     function setUp() public {
-        // To fork at a specific block: vm.createSelectFork(vm.rpcUrl("mainnet"), BLOCK_NUMBER);
         vm.createSelectFork(vm.rpcUrl("mainnet"));
 
         // Deploy Payload
@@ -33,11 +34,15 @@ contract ProposalPayloadE2ETest is Test {
     }
 
     function testExecute() public {
-        // Pre-execution assertations
+        ReserveConfig[] memory allConfigsBefore = AaveV2Helpers._getReservesConfigs(false, MARKET_NAME);
+        ReserveConfig memory feiConfigBefore = AaveV2Helpers._findReserveConfig(allConfigsBefore, "FEI", true);
+        assertEq(feiConfigBefore.reserveFactor, 10_000);
 
         // Pass vote and execute proposal
         GovHelpers.passVoteAndExecute(vm, proposalId);
 
-        // Post-execution assertations
+        ReserveConfig[] memory allConfigsAfter = AaveV2Helpers._getReservesConfigs(false, MARKET_NAME);
+        ReserveConfig memory feiConfigAfter = AaveV2Helpers._findReserveConfig(allConfigsAfter, "FEI", true);
+        assertEq(feiConfigAfter.reserveFactor, 9_900);
     }
 }
