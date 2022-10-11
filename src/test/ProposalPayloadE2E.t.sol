@@ -15,6 +15,8 @@ contract ProposalPayloadE2ETest is Test {
 
     uint256 public proposalId;
 
+    string public constant MARKET_NAME = "AaveV2Ethereum";
+
     function setUp() public {
         // To fork at a specific block: vm.createSelectFork(vm.rpcUrl("mainnet"), BLOCK_NUMBER);
         vm.createSelectFork(vm.rpcUrl("mainnet"));
