@@ -10,6 +10,7 @@ import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
 import {ProposalPayload} from "../ProposalPayload.sol";
 import {DeployMainnetProposal} from "../../script/DeployMainnetProposal.s.sol";
 import {AaveV2Helpers, ReserveConfig} from "./utils/AaveV2Helpers.sol";
+import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
 
 contract ProposalPayloadE2ETest is Test {
     address public constant AAVE_WHALE = 0x25F2226B597E8F9514B3F68F00f494cF4f286491;
@@ -17,6 +18,10 @@ contract ProposalPayloadE2ETest is Test {
     uint256 public proposalId;
 
     string public constant MARKET_NAME = "AaveV2Ethereum";
+
+    address public constant FEI_TOKEN = 0x956F47F50A910163D8BF957Cf5846D573E7f87CA;
+    address public constant FEI_WHALE = 0x86f6ff8479c69E0cdEa641796b0D3bB1D40761Db;
+    address public constant VARIABLE_DEBT_FEI_WHALE = 0x26bdDe6506bd32bD7B5Cc5C73cd252807fF18568;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("mainnet"));
@@ -43,5 +48,28 @@ contract ProposalPayloadE2ETest is Test {
         ReserveConfig[] memory allConfigsAfter = AaveV2Helpers._getReservesConfigs(false, MARKET_NAME);
         ReserveConfig memory feiConfigAfter = AaveV2Helpers._findReserveConfig(allConfigsAfter, "FEI", true);
         assertEq(feiConfigAfter.reserveFactor, 9_900);
+    }
+
+    function testPoolActionsPostExecution() public {
+        // Pass vote and execute proposal
+        GovHelpers.passVoteAndExecute(vm, proposalId);
+
+        vm.startPrank(FEI_WHALE);
+        IERC20(FEI_TOKEN).transfer(VARIABLE_DEBT_FEI_WHALE, 1000e18);
+        vm.stopPrank();
+
+        uint128 initialVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
+        console.log(initialVariableBorrowIndex);
+
+        vm.startPrank(VARIABLE_DEBT_FEI_WHALE);
+        AaveV2Ethereum.POOL.repay(FEI_TOKEN, 1000e18, 2, VARIABLE_DEBT_FEI_WHALE);
+        vm.stopPrank();
+
+        uint128 finalVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
+        console.log(finalVariableBorrowIndex);
+
+        // Variable Borrow Index seems to be staying the same
+        // This check is failing
+        assertGt(finalVariableBorrowIndex, initialVariableBorrowIndex);
     }
 }
