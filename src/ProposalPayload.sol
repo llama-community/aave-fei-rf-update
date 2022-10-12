@@ -8,8 +8,7 @@ import {AaveV2Ethereum} from "@aave-address-book/AaveV2Ethereum.sol";
  * @author Llama
  * @notice This payload sets the reserve factor to 99% for FEI in Aave v2 pool on mainnet
  * Reference: https://wheat-guardian-dfc.notion.site/Problem-with-FEI-Reserve-Factor-100b6413e359494a9ecb59a528035ff2
- * Governance Forum Post:
- * Snapshot:
+ * Governance Forum Post: https://governance.aave.com/t/bgd-aave-v2-ethereum-fei-security-report/10251
  */
 contract ProposalPayload {
     address public constant FEI = 0x956F47F50A910163D8BF957Cf5846D573E7f87CA;
