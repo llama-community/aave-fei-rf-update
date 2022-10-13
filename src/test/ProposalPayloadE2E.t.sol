@@ -54,20 +54,33 @@ contract ProposalPayloadE2ETest is Test {
         // Pass vote and execute proposal
         GovHelpers.passVoteAndExecute(vm, proposalId);
 
+        uint256 amount = 1000e18;
+
         vm.startPrank(FEI_WHALE);
-        IERC20(FEI_TOKEN).transfer(VARIABLE_DEBT_FEI_WHALE, 1000e18);
+        IERC20(FEI_TOKEN).transfer(VARIABLE_DEBT_FEI_WHALE, amount);
         vm.stopPrank();
+
+        // Moving ahead 10000s
+        skip(10000);
 
         uint128 initialVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
-        console.log(initialVariableBorrowIndex);
+
+        // FEI Variable Debt token
+        address debtToken = 0xC2e10006AccAb7B45D9184FcF5b7EC7763f5BaAe;
+        uint256 debtBefore = IERC20(debtToken).balanceOf(VARIABLE_DEBT_FEI_WHALE);
 
         vm.startPrank(VARIABLE_DEBT_FEI_WHALE);
-        AaveV2Ethereum.POOL.repay(FEI_TOKEN, 1000e18, 2, VARIABLE_DEBT_FEI_WHALE);
+        AaveV2Ethereum.POOL.repay(FEI_TOKEN, amount, 2, VARIABLE_DEBT_FEI_WHALE);
         vm.stopPrank();
 
-        uint128 finalVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
-        console.log(finalVariableBorrowIndex);
+        uint256 debtAfter = IERC20(debtToken).balanceOf(VARIABLE_DEBT_FEI_WHALE);
+        // This check is failing
+        assertEq(debtAfter, ((debtBefore > amount) ? debtBefore - amount : 0));
 
+        // Moving ahead 10000s
+        skip(10000);
+
+        uint128 finalVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
         // Variable Borrow Index seems to be staying the same
         // This check is failing
         assertGt(finalVariableBorrowIndex, initialVariableBorrowIndex);
