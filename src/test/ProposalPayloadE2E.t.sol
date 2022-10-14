@@ -24,7 +24,7 @@ contract ProposalPayloadE2ETest is Test {
     address public constant VARIABLE_DEBT_FEI_WHALE = 0x26bdDe6506bd32bD7B5Cc5C73cd252807fF18568;
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("mainnet"));
+        vm.createSelectFork(vm.rpcUrl("mainnet"), 15745470);
 
         // Deploy Payload
         ProposalPayload proposalPayload = new ProposalPayload();
@@ -74,7 +74,6 @@ contract ProposalPayloadE2ETest is Test {
         vm.stopPrank();
 
         uint256 debtAfter = IERC20(debtToken).balanceOf(VARIABLE_DEBT_FEI_WHALE);
-        // This check is failing
         assertEq(debtAfter, ((debtBefore > amount) ? debtBefore - amount : 0));
 
         // Moving ahead 10000s
@@ -82,7 +81,6 @@ contract ProposalPayloadE2ETest is Test {
 
         uint128 finalVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
         // Variable Borrow Index seems to be staying the same
-        // This check is failing
         assertGt(finalVariableBorrowIndex, initialVariableBorrowIndex);
     }
 }
