@@ -80,7 +80,6 @@ contract ProposalPayloadE2ETest is Test {
         skip(10000);
 
         uint128 finalVariableBorrowIndex = AaveV2Ethereum.POOL.getReserveData(FEI_TOKEN).variableBorrowIndex;
-        // Variable Borrow Index seems to be staying the same
         assertGt(finalVariableBorrowIndex, initialVariableBorrowIndex);
     }
 }
